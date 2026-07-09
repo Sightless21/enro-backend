@@ -64,6 +64,10 @@ export class OrdersService {
     });
   }
 
+  async findAll() {
+    return this.prisma.order.findMany();
+  }
+
   /** แบ่งยอดรวมเป็นรายงวด งวดสุดท้ายรับเศษที่หารไม่ลงตัวไป (กันเงินหาย/เกินจากการปัดเศษ) */
   private splitAmountIntoInstallments(total: number, count: number): number[] {
     const base = Math.floor(total / count);

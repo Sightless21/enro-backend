@@ -106,30 +106,4 @@ export class CoursesService {
       message: `Course ${course.title} deleted successfully`,
     };
   }
-
-  async activated(id: string) {
-    const course = await this.prisma.course.update({
-      where: { id },
-      data: { isActive: true },
-    });
-
-    if (!course) {
-      throw new NotFoundException(`Course with ID ${id} not found`);
-    }
-
-    return { message: `Course ${course.title} activated successfully` };
-  }
-
-  async deactivate(id: string) {
-    const course = await this.prisma.course.update({
-      where: { id },
-      data: { isActive: false },
-    });
-
-    if (!course) {
-      throw new NotFoundException(`Course with ID ${id} not found`);
-    }
-
-    return { message: `Course ${course.title} deactivated successfully` };
-  }
 }

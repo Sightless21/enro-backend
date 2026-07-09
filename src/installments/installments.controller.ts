@@ -1,4 +1,4 @@
-import { Body, Controller, Param, Patch } from '@nestjs/common';
+import { Body, Controller, Param, Post, Patch } from '@nestjs/common';
 import { InstallmentsService } from './installments.service';
 import { SubmitSlipDto } from './dto/submit-slip.dto';
 import { CurrentUser } from '@/auth/decorator/current-user.decorator';
@@ -19,7 +19,7 @@ export class InstallmentsController {
     return this.installmentsService.submitSlip(id, data, userId);
   }
 
-  @Patch(':id/verify')
+  @Post(':id/verify')
   @Roles('ADMIN')
   verify(@Param('id') id: string, @Body() data: VerifyInstallmentDto) {
     return this.installmentsService.verify(id, data.approve);
