@@ -11,7 +11,6 @@ import { APP_GUARD } from '@nestjs/core';
 import { AuthGuard } from './auth/guard/auth.guard';
 import { RolesGuard } from './auth/guard/roles.guard';
 import { CourseCategoriesModule } from './course-categories/course-categories.module';
-import { CourseCategoriesModule } from './course-categories/course-categories.module';
 
 @Module({
   imports: [
