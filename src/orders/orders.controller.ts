@@ -1,12 +1,17 @@
-import { Controller, Post } from '@nestjs/common';
+import { Controller, Post, Body } from '@nestjs/common';
 import { OrdersService } from './orders.service';
+import { CreateOrderDto } from './dto/create-order.dto';
+import { CurrentUser } from '@/auth/decorator/current-user.decorator';
+import { Roles } from '@/auth/decorator/roles.decorator';
+import { Role } from '@prisma/client';
 
 @Controller('orders')
 export class OrdersController {
-  constructor(private readonly orderService: OrdersService) {}
+  constructor(private readonly ordersService: OrdersService) {}
 
-  // @Post()
-  // createOrder() {
-  //   return this.orderService.createOrder('studentId', 'courseId');
-  // }
+  @Post()
+  @Roles(Role.STUDENT)
+  create(@Body() data: CreateOrderDto, @CurrentUser('sub') userId: string) {
+    return this.ordersService.create(userId, data);
+  }
 }
