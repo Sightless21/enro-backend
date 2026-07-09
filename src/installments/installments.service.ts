@@ -113,4 +113,23 @@ export class InstallmentsService {
       return update;
     });
   }
+
+  async findPendingVerification() {
+    return this.prisma.installment.findMany({
+      where: { status: 'WAITING_VERIFICATION' },
+      include: {
+        order: {
+          include: {
+            student: {
+              include: {
+                user: { select: { id: true, email: true, name: true } },
+              },
+            },
+            course: { select: { id: true, title: true } },
+          },
+        },
+      },
+      orderBy: { updatedAt: 'asc' }, // เก่าสุดขึ้นก่อน กันงวดที่รอนานถูกลืม
+    });
+  }
 }
