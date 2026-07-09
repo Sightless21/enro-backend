@@ -1,4 +1,4 @@
-import { Body, Controller, Param, Post, Patch } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Patch } from '@nestjs/common';
 import { InstallmentsService } from './installments.service';
 import { SubmitSlipDto } from './dto/submit-slip.dto';
 import { CurrentUser } from '@/auth/decorator/current-user.decorator';
@@ -8,6 +8,12 @@ import { VerifyInstallmentDto } from './dto/verify-installment.dto';
 @Controller('installments')
 export class InstallmentsController {
   constructor(private readonly installmentsService: InstallmentsService) {}
+
+  @Get('pending')
+  @Roles('ADMIN')
+  findPendingVerification() {
+    return this.installmentsService.findPendingVerification();
+  }
 
   @Patch(':id/submit-slip')
   @Roles('STUDENT')
