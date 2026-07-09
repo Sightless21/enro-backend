@@ -2,6 +2,7 @@ import {
   Injectable,
   BadRequestException,
   NotFoundException,
+  ForbiddenException,
 } from '@nestjs/common';
 import { PrismaService } from '@prisma/prisma.service';
 import { CreateOrderDto } from './dto/create-order.dto';
@@ -64,8 +65,50 @@ export class OrdersService {
     });
   }
 
-  async findAll() {
-    return this.prisma.order.findMany();
+  async findMyOrders(userId: string) {
+    const student = await this.prisma.student.findUnique({ where: { userId } });
+    if (!student) {
+      throw new BadRequestException(
+        'This user does not have a student profile.',
+      );
+    }
+
+    return this.prisma.order.findMany({
+      where: { studentId: student.id },
+      include: {
+        course: { select: { id: true, title: true, type: true } },
+        pricingPlan: true,
+        bookOption: true,
+        installments: {
+          orderBy: { seq: 'asc' },
+        },
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+  }
+
+  async findOne(orderId: string, userId: string, isAdmin: boolean) {
+    const order = await this.prisma.order.findUnique({
+      where: { id: orderId },
+      include: {
+        course: { select: { id: true, title: true, type: true } },
+        pricingPlan: true,
+        bookOption: true,
+        installments: { orderBy: { seq: 'asc' } },
+        student: { select: { id: true, userId: true } },
+      },
+    });
+
+    if (!order) {
+      throw new NotFoundException('Order not found');
+    }
+
+    // admin ดูได้ทุก order, student ดูได้เฉพาะของตัวเอง
+    if (!isAdmin && order.student.userId !== userId) {
+      throw new ForbiddenException('You do not have access to this order');
+    }
+
+    return order;
   }
 
   /** แบ่งยอดรวมเป็นรายงวด งวดสุดท้ายรับเศษที่หารไม่ลงตัวไป (กันเงินหาย/เกินจากการปัดเศษ) */
