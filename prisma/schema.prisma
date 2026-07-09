@@ -1,0 +1,371 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// Identity / Authentication
+model User {
+  id    String @id @default(cuid())
+  email String @unique
+  name  String
+
+  role     Role    @default(STUDENT)
+  isActive Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  authProviders AuthProvider[]
+
+  studentProfile Student?
+  teacherProfile Teacher?
+}
+
+enum Role {
+  STUDENT
+  TEACHER
+  ADMIN
+}
+
+model AuthProvider {
+  id       String           @id @default(cuid())
+  userId   String
+  provider AuthProviderType
+
+  providerUserId String?
+  passwordHash   String?
+
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@unique([userId, provider])
+  @@unique([provider, providerUserId])
+}
+
+enum AuthProviderType {
+  LOCAL
+  GOOGLE
+  LINE
+}
+
+// Master Data (Domain Entity)
+model Student {
+  id          String  @id @default(cuid())
+  userId      String  @unique
+  studentCode String? @unique
+  nickname    String?
+
+  phone String?
+
+  birthDate DateTime?
+
+  gender Gender?
+
+  school String?
+
+  bio String?
+
+  occupation String?
+
+  note String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  enrollments   Enrollment[]
+  orders        Order[]
+  classSessions ClassSession[]
+
+  user User @relation(fields: [userId], references: [id])
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+}
+
+model Teacher {
+  id     String @id @default(cuid())
+  userId String @unique
+
+  nickname String?
+
+  phone String?
+
+  employeeCode String? @unique
+
+  hireDate DateTime?
+
+  specialty String?
+
+  jlptLevel JlptLevel?
+
+  assignments   TeacherAssignment[]
+  classSessions ClassSession[]
+
+  bio String?
+
+  note String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id])
+}
+
+// Association Entity
+model TeacherAssignment {
+  teacherId String
+  courseId  String
+
+  assignedAt DateTime @default(now())
+
+  isPrimary Boolean @default(false)
+
+  status AssignmentStatus @default(ACTIVE)
+
+  maxHoursPerWeek Int?
+
+  teacher Teacher @relation(fields: [teacherId], references: [id])
+  course  Course  @relation(fields: [courseId], references: [id])
+
+  @@id([teacherId, courseId])
+}
+
+enum AssignmentStatus {
+  ACTIVE
+  INACTIVE
+}
+
+model CourseCategory {
+  id   String     @id @default(cuid())
+  name String
+  type CourseType
+
+  courses Course[]
+
+  @@unique([name, type])
+}
+
+// Master Data (Domain Entity)
+model Course {
+  id         String     @id @default(cuid())
+  categoryId String?
+  title      String
+  type       CourseType
+
+  format CourseFormat @default(FIXED_TERM)
+
+  level JlptLevel?
+
+  sessionsPerWeek Int?
+  hoursPerSession Int? //float
+  totalSessions   Int?
+  totalHours      Int? //float
+  durationMonths  Int?
+
+  maxCapacity Int?
+
+  isActive Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  category CourseCategory? @relation(fields: [categoryId], references: [id])
+
+  pricingPlans CoursePricingPlan[]
+  bookOptions  CourseBookOption[]
+  assignments  TeacherAssignment[]
+  orders       Order[]
+  enrollments  Enrollment[]
+}
+
+enum CourseType {
+  GROUP
+  PRIVATE
+  FREESTYLE
+}
+
+enum CourseFormat {
+  FIXED_TERM
+  SUBSCRIPTION
+}
+
+enum JlptLevel {
+  N5
+  N4
+  N3
+  N2
+  N1
+}
+
+model CoursePricingPlan {
+  id       String @id @default(cuid())
+  courseId String
+  name     String // "รายเดือน", "เหมาจ่าย", "Lite Plan", "Standard Plan"
+
+  billingType      BillingType
+  price            Int
+  installmentCount Int         @default(1) // จำนวนงวดผ่อนชำระ เช่น N5=2, N3=3, N2/N1=4
+
+  savingAmount Int? // ส่วนลดเทียบราคารายเดือน เช่น "ประหยัด 3,000 บาท" (เก็บไว้โชว์หน้าเว็บ ไม่ใช่ตัวคำนวณจริง)
+
+  isActive Boolean @default(true)
+
+  course Course  @relation(fields: [courseId], references: [id])
+  orders Order[]
+
+  @@unique([courseId, name])
+}
+
+enum BillingType {
+  MONTHLY
+  ONE_TIME
+}
+
+model CourseBookOption {
+  id       String   @id @default(cuid())
+  courseId String
+  type     BookType
+  price    Int? // null = ไม่มีค่าใช้จ่ายเพิ่ม (รวมในคอร์สแล้ว)
+
+  course Course  @relation(fields: [courseId], references: [id])
+  orders Order[]
+
+  @@unique([courseId, type])
+}
+
+enum BookType {
+  EBOOK
+  PHYSICAL
+}
+
+// Transaction Entity
+model Order {
+  id        String @id @default(cuid())
+  studentId String
+  courseId  String
+
+  pricingPlanId String
+  bookOptionId  String?
+
+  totalAmount Int
+  status      OrderStatus @default(PENDING)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  student     Student           @relation(fields: [studentId], references: [id])
+  course      Course            @relation(fields: [courseId], references: [id])
+  pricingPlan CoursePricingPlan @relation(fields: [pricingPlanId], references: [id])
+  bookOption  CourseBookOption? @relation(fields: [bookOptionId], references: [id])
+
+  installments Installment[]
+  enrollment   Enrollment?
+
+  @@index([studentId])
+  @@index([courseId])
+}
+
+enum OrderStatus {
+  PENDING
+  WAITING_VERIFICATION
+  COMPLETED
+  REJECTED
+}
+
+model Installment {
+  id      String @id @default(cuid())
+  orderId String
+  seq     Int // งวดที่ 1, 2, 3, ...
+
+  amount  Int
+  dueDate DateTime?
+  paidAt  DateTime?
+  slipUrl String?
+  status  InstallmentStatus @default(PENDING)
+
+  order Order @relation(fields: [orderId], references: [id])
+
+  @@unique([orderId, seq])
+  @@index([orderId])
+}
+
+enum InstallmentStatus {
+  PENDING
+  WAITING_VERIFICATION
+  PAID
+  REJECTED
+}
+
+model Enrollment {
+  id        String           @id @default(cuid())
+  studentId String
+  courseId  String
+  status    EnrollmentStatus @default(ACTIVE)
+  startedAt DateTime         @default(now())
+  expiresAt DateTime? // ถ้าเป็นคอร์สแบบมีวันหมดอายุ หรือ subscription ที่ต้องต่ออายุรายเดือน
+
+  orderId String @unique
+
+  student       Student        @relation(fields: [studentId], references: [id])
+  course        Course         @relation(fields: [courseId], references: [id])
+  order         Order          @relation(fields: [orderId], references: [id])
+  classSessions ClassSession[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([studentId])
+  @@index([courseId])
+}
+
+enum EnrollmentStatus {
+  ACTIVE
+  EXPIRED
+  CANCELLED
+}
+
+// คาบเรียนแต่ละครั้งที่ถูกนัด/จองจริง
+// สำคัญมากสำหรับ Private/Freestyle ที่ผู้เรียนเลือกวันเวลา + ครูเอง
+// สำหรับ Group อาจ generate ล่วงหน้าตาม schedule ของคลาส
+model ClassSession {
+  id           String  @id @default(cuid())
+  enrollmentId String
+  studentId    String
+  teacherId    String?
+
+  scheduledAt DateTime
+  durationMin Int      @default(60)
+  meetingLink String? // Google Meet link ที่ส่งทางอีเมล
+
+  status ClassSessionStatus @default(SCHEDULED)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  enrollment Enrollment @relation(fields: [enrollmentId], references: [id])
+  student    Student    @relation(fields: [studentId], references: [id])
+  teacher    Teacher?   @relation(fields: [teacherId], references: [id])
+
+  @@index([enrollmentId])
+  @@index([teacherId])
+  @@index([scheduledAt])
+}
+
+enum ClassSessionStatus {
+  SCHEDULED
+  COMPLETED
+  NO_SHOW
+  CANCELLED
+}

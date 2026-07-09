@@ -1,0 +1,36 @@
+services:
+  enro-postgres:
+    image: postgres:17
+    container_name: enro-postgres
+    environment:
+      POSTGRES_DB: enro
+      POSTGRES_USER: enro
+      POSTGRES_PASSWORD: enro
+    volumes:
+      - enro-postgres-data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+    networks:
+      - enro-network
+
+  enro-pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: enro-pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: enro@enro.com
+      PGADMIN_DEFAULT_PASSWORD: enro
+    ports:
+      - "5050:80"
+    depends_on:
+      - enro-postgres
+    restart: unless-stopped
+    networks:
+      - enro-network
+
+volumes:
+  enro-postgres-data:
+
+networks:
+  enro-network:
+    driver: bridge
