@@ -1,4 +1,6 @@
 import { Injectable } from '@nestjs/common';
-
+import { PrismaService } from '@prisma/prisma.service';
 @Injectable()
-export class InstallmentsService {}
+export class InstallmentsService {
+  constructor(private readonly prisma: PrismaService) {}
+}

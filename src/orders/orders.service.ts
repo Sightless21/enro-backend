@@ -3,7 +3,7 @@ import {
   BadRequestException,
   NotFoundException,
 } from '@nestjs/common';
-import { PrismaService } from 'prisma/prisma.service';
+import { PrismaService } from '@prisma/prisma.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { CourseBookOption, Order, Prisma } from '@prisma/client';
 import { CourseType } from '@prisma/client';
