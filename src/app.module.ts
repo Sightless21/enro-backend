@@ -35,7 +35,7 @@ import { TeachersModule } from './teachers/teachers.module';
     StudentsModule,
     TeachersModule,
   ],
-  controllers: [AppController, EnrollmentsController],
+  controllers: [AppController],
   providers: [
     AppService,
     {
