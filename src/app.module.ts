@@ -17,6 +17,7 @@ import { EnrollmentsController } from './enrollments/enrollments.controller';
 import { EnrollmentsModule } from './enrollments/enrollments.module';
 import { ClassSessionsService } from './class-sessions/class-sessions.service';
 import { ClassSessionsModule } from './class-sessions/class-sessions.module';
+import { StudentModule } from './student/student.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { ClassSessionsModule } from './class-sessions/class-sessions.module';
     InstallmentsModule,
     EnrollmentsModule,
     ClassSessionsModule,
+    StudentModule,
   ],
   controllers: [AppController, EnrollmentsController],
   providers: [
