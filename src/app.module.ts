@@ -13,7 +13,7 @@ import { RolesGuard } from './auth/guard/roles.guard';
 import { CourseCategoriesModule } from './course-categories/course-categories.module';
 import { InstallmentsModule } from './installments/installments.module';
 import { EnrollmentsModule } from './enrollments/enrollments.module';
-import { ClassSessionsModule } from './class-sessions/class-sessions.module';
+import { ClassMeetingsModule } from './class-meetings/class-meetings.module';
 import { StudentsModule } from './students/students.module';
 import { TeachersModule } from './teachers/teachers.module';
 
@@ -30,7 +30,7 @@ import { TeachersModule } from './teachers/teachers.module';
     CourseCategoriesModule,
     InstallmentsModule,
     EnrollmentsModule,
-    ClassSessionsModule,
+    ClassMeetingsModule,
     StudentsModule,
     TeachersModule,
   ],

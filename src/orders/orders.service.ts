@@ -8,6 +8,7 @@ import { PrismaService } from '@prisma/prisma.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { CourseBookOption, Order, Prisma } from '@prisma/client';
 import { CourseType } from '@prisma/client';
+import { isEnrollmentActive } from '@/common/utils/enrollment.util';
 @Injectable()
 export class OrdersService {
   constructor(private prisma: PrismaService) {}
@@ -148,9 +149,13 @@ export class OrdersService {
         return await this.prisma.$transaction(
           async (tx): Promise<Order> => {
             if (courseType === 'GROUP' && maxCapacity != null) {
-              const activeEnrollmentsCount = await tx.enrollment.count({
+              const activeEnrollments = await tx.enrollment.findMany({
                 where: { courseId, status: 'ACTIVE' },
+                select: { id: true, status: true, expiresAt: true },
               });
+
+              const activeEnrollmentsCount =
+                activeEnrollments.filter(isEnrollmentActive).length;
 
               if (activeEnrollmentsCount >= maxCapacity) {
                 throw new BadRequestException(
