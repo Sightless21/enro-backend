@@ -85,7 +85,8 @@ model Student {
   orders        Order[]
   classSessions ClassSession[]
 
-  user User @relation(fields: [userId], references: [id])
+  user             User              @relation(fields: [userId], references: [id])
+  classAttendances ClassAttendance[]
 }
 
 enum Gender {
@@ -120,7 +121,8 @@ model Teacher {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  user User @relation(fields: [userId], references: [id])
+  user          User           @relation(fields: [userId], references: [id])
+  classMeetings ClassMeeting[]
 }
 
 // Association Entity
@@ -183,11 +185,12 @@ model Course {
 
   category CourseCategory? @relation(fields: [categoryId], references: [id])
 
-  pricingPlans CoursePricingPlan[]
-  bookOptions  CourseBookOption[]
-  assignments  TeacherAssignment[]
-  orders       Order[]
-  enrollments  Enrollment[]
+  pricingPlans  CoursePricingPlan[]
+  bookOptions   CourseBookOption[]
+  assignments   TeacherAssignment[]
+  orders        Order[]
+  enrollments   Enrollment[]
+  classMeetings ClassMeeting[]
 }
 
 enum CourseType {
@@ -326,8 +329,9 @@ model Enrollment {
   order         Order          @relation(fields: [orderId], references: [id])
   classSessions ClassSession[]
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  classAttendances ClassAttendance[]
 
   @@index([studentId])
   @@index([courseId])
@@ -369,6 +373,55 @@ model ClassSession {
 enum ClassSessionStatus {
   SCHEDULED
   COMPLETED
+  NO_SHOW
+  CANCELLED
+}
+
+// คาบเรียนที่เกิดขึ้นจริง 1 ครั้ง (ใช้ร่วมกันได้หลายคนสำหรับ Group)
+model ClassMeeting {
+  id          String             @id @default(cuid())
+  courseId    String
+  teacherId   String?
+  scheduledAt DateTime
+  durationMin Int                @default(60)
+  meetingLink String?
+  status      ClassSessionStatus @default(SCHEDULED)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  course      Course            @relation(fields: [courseId], references: [id])
+  teacher     Teacher?          @relation(fields: [teacherId], references: [id])
+  attendances ClassAttendance[]
+
+  @@index([courseId])
+  @@index([teacherId])
+  @@index([scheduledAt])
+}
+
+// การเข้าเรียนของนักเรียนแต่ละคนต่อ 1 คาบ
+model ClassAttendance {
+  id             String           @id @default(cuid())
+  classMeetingId String
+  enrollmentId   String
+  studentId      String
+  status         AttendanceStatus @default(SCHEDULED)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  classMeeting ClassMeeting @relation(fields: [classMeetingId], references: [id])
+  enrollment   Enrollment   @relation(fields: [enrollmentId], references: [id])
+  student      Student      @relation(fields: [studentId], references: [id])
+
+  @@unique([classMeetingId, studentId])
+  @@index([enrollmentId])
+  @@index([studentId])
+}
+
+enum AttendanceStatus {
+  SCHEDULED
+  ATTENDED
   NO_SHOW
   CANCELLED
 }
