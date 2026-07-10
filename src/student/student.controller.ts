@@ -1,4 +1,4 @@
-import { Controller, Get, Patch } from '@nestjs/common';
+import { Body, Controller, Get, Patch } from '@nestjs/common';
 import { StudentService } from './student.service';
 import { CurrentUser } from '@/auth/decorator/current-user.decorator';
 import { UpdateStudentProfileDto } from './dto/update-student-profile.dto';
@@ -18,7 +18,7 @@ export class StudentController {
   @Roles('STUDENT')
   updateMyProfile(
     @CurrentUser('sub') userId: string,
-    data: UpdateStudentProfileDto,
+    @Body() data: UpdateStudentProfileDto,
   ) {
     return this.studentService.updateMyProfile(userId, data);
   }
