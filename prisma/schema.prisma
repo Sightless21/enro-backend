@@ -367,7 +367,7 @@ enum EnrollmentStatus {
 //   @@index([scheduledAt])
 // }
 
-enum ClassSessionStatus {
+enum ClassMeetingStatus {
   SCHEDULED
   COMPLETED
   NO_SHOW
@@ -382,7 +382,7 @@ model ClassMeeting {
   scheduledAt DateTime
   durationMin Int                @default(60)
   meetingLink String?
-  status      ClassSessionStatus @default(SCHEDULED)
+  status      ClassMeetingStatus @default(SCHEDULED)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
