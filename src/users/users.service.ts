@@ -100,32 +100,6 @@ export class UsersService {
     };
   }
 
-  async activate(id: string) {
-    await this.prisma.user.update({
-      where: { id },
-      data: {
-        isActive: true,
-      },
-    });
-
-    return {
-      message: 'User activated successfully',
-    };
-  }
-
-  async deactivate(id: string) {
-    await this.prisma.user.update({
-      where: { id },
-      data: {
-        isActive: false,
-      },
-    });
-
-    return {
-      message: 'User deactivated successfully',
-    };
-  }
-
   async resetPassword(id: string, data: ResetPasswordDto) {
     const user = await this.prisma.user.findUnique({
       where: { id },
