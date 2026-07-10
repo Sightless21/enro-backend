@@ -15,7 +15,7 @@ import { InstallmentsModule } from './installments/installments.module';
 import { EnrollmentsController } from './enrollments/enrollments.controller';
 import { EnrollmentsModule } from './enrollments/enrollments.module';
 import { ClassSessionsModule } from './class-sessions/class-sessions.module';
-import { StudentModule } from './student/student.module';
+import { StudentsModule } from './students/students.module';
 import { TeachersModule } from './teachers/teacher.module';
 
 @Module({
@@ -32,7 +32,7 @@ import { TeachersModule } from './teachers/teacher.module';
     InstallmentsModule,
     EnrollmentsModule,
     ClassSessionsModule,
-    StudentModule,
+    StudentsModule,
     TeachersModule,
   ],
   controllers: [AppController, EnrollmentsController],
