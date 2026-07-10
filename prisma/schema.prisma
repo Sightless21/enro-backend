@@ -81,9 +81,8 @@ model Student {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  enrollments   Enrollment[]
-  orders        Order[]
-  classSessions ClassSession[]
+  enrollments Enrollment[]
+  orders      Order[]
 
   user             User              @relation(fields: [userId], references: [id])
   classAttendances ClassAttendance[]
@@ -111,8 +110,7 @@ model Teacher {
 
   jlptLevel JlptLevel?
 
-  assignments   TeacherAssignment[]
-  classSessions ClassSession[]
+  assignments TeacherAssignment[]
 
   bio String?
 
@@ -324,10 +322,9 @@ model Enrollment {
 
   orderId String @unique
 
-  student       Student        @relation(fields: [studentId], references: [id])
-  course        Course         @relation(fields: [courseId], references: [id])
-  order         Order          @relation(fields: [orderId], references: [id])
-  classSessions ClassSession[]
+  student Student @relation(fields: [studentId], references: [id])
+  course  Course  @relation(fields: [courseId], references: [id])
+  order   Order   @relation(fields: [orderId], references: [id])
 
   createdAt        DateTime          @default(now())
   updatedAt        DateTime          @updatedAt
@@ -346,29 +343,29 @@ enum EnrollmentStatus {
 // คาบเรียนแต่ละครั้งที่ถูกนัด/จองจริง
 // สำคัญมากสำหรับ Private/Freestyle ที่ผู้เรียนเลือกวันเวลา + ครูเอง
 // สำหรับ Group อาจ generate ล่วงหน้าตาม schedule ของคลาส
-model ClassSession {
-  id           String  @id @default(cuid())
-  enrollmentId String
-  studentId    String
-  teacherId    String?
+// model ClassSession {
+//   id           String  @id @default(cuid())
+//   enrollmentId String
+//   studentId    String
+//   teacherId    String?
 
-  scheduledAt DateTime
-  durationMin Int      @default(60)
-  meetingLink String? // Google Meet link ที่ส่งทางอีเมล
+//   scheduledAt DateTime
+//   durationMin Int      @default(60)
+//   meetingLink String? // Google Meet link ที่ส่งทางอีเมล
 
-  status ClassSessionStatus @default(SCHEDULED)
+//   status ClassSessionStatus @default(SCHEDULED)
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+//   createdAt DateTime @default(now())
+//   updatedAt DateTime @updatedAt
 
-  enrollment Enrollment @relation(fields: [enrollmentId], references: [id])
-  student    Student    @relation(fields: [studentId], references: [id])
-  teacher    Teacher?   @relation(fields: [teacherId], references: [id])
+//   enrollment Enrollment @relation(fields: [enrollmentId], references: [id])
+//   student    Student    @relation(fields: [studentId], references: [id])
+//   teacher    Teacher?   @relation(fields: [teacherId], references: [id])
 
-  @@index([enrollmentId])
-  @@index([teacherId])
-  @@index([scheduledAt])
-}
+//   @@index([enrollmentId])
+//   @@index([teacherId])
+//   @@index([scheduledAt])
+// }
 
 enum ClassSessionStatus {
   SCHEDULED
