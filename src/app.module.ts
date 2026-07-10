@@ -16,7 +16,7 @@ import { EnrollmentsController } from './enrollments/enrollments.controller';
 import { EnrollmentsModule } from './enrollments/enrollments.module';
 import { ClassSessionsModule } from './class-sessions/class-sessions.module';
 import { StudentsModule } from './students/students.module';
-import { TeachersModule } from './teachers/teacher.module';
+import { TeachersModule } from './teachers/teachers.module';
 
 @Module({
   imports: [

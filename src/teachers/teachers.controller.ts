@@ -1,5 +1,5 @@
 import { Controller, Get, Patch, Body } from '@nestjs/common';
-import { TeachersService } from './teacher.service';
+import { TeachersService } from './teachers.service';
 import { UpdateTeacherProfileDto } from './dto/update-teacher-profile.dto';
 import { CurrentUser } from '@/auth/decorator/current-user.decorator';
 import { Roles } from '@/auth/decorator/roles.decorator';
