@@ -4,6 +4,7 @@ import { CreateCourseDto } from './dto/create-courses.dto';
 import { UpdateCourseDto } from './dto/update-courses.dto';
 import { Param } from '@nestjs/common';
 import { Body } from '@nestjs/common';
+import { Roles } from '@/auth/decorator/roles.decorator';
 
 @Controller('courses')
 export class CoursesController {
@@ -20,16 +21,19 @@ export class CoursesController {
   }
 
   @Post()
+  @Roles('ADMIN')
   create(@Body() data: CreateCourseDto) {
     return this.coursesService.create(data);
   }
 
   @Patch(':id')
+  @Roles('ADMIN')
   update(@Param('id') id: string, @Body() data: UpdateCourseDto) {
     return this.coursesService.update(id, data);
   }
 
   @Delete(':id')
+  @Roles('ADMIN')
   remove(@Param('id') id: string) {
     return this.coursesService.remove(id);
   }

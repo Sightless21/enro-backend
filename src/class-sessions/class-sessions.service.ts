@@ -1,9 +1,10 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
-import { PrismaClient, Role } from '@prisma/client';
+import { Role } from '@prisma/client';
+import { PrismaService } from '@prisma/prisma.service';
 
 @Injectable()
 export class ClassSessionsService {
-  constructor(private readonly prisma: PrismaClient) {}
+  constructor(private readonly prisma: PrismaService) {}
 
   async findMySessionsAsStudent(userId: string) {
     const student = await this.prisma.student.findUnique({

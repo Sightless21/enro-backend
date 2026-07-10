@@ -4,11 +4,11 @@ import {
   ForbiddenException,
   BadRequestException,
 } from '@nestjs/common';
-import { PrismaClient } from '@prisma/client';
+import { PrismaService } from '@prisma/prisma.service';
 
 @Injectable()
 export class EnrollmentsService {
-  constructor(private readonly prisma: PrismaClient) {}
+  constructor(private readonly prisma: PrismaService) {}
 
   async findMyEnrollments(userId: string) {
     const student = await this.prisma.student.findUnique({

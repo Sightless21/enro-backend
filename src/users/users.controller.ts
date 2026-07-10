@@ -1,12 +1,11 @@
 import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
 import { Roles } from '@/auth/decorator/roles.decorator';
-import { Role } from '@prisma/client';
 import { UsersService } from './users.service';
 import { CreateAdminDto } from './dto/create-admin.dto';
 import { UpdateUsersDto } from './dto/update-users.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 
-@Roles(Role.ADMIN)
+@Roles('ADMIN')
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
@@ -29,16 +28,6 @@ export class UsersController {
   @Patch(':id')
   async update(@Param('id') id: string, @Body() data: UpdateUsersDto) {
     return this.usersService.update(id, data);
-  }
-
-  @Patch(':id/activate')
-  async activate(@Param('id') id: string) {
-    return this.usersService.activate(id);
-  }
-
-  @Patch(':id/deactivate')
-  async deactivate(@Param('id') id: string) {
-    return this.usersService.deactivate(id);
   }
 
   @Post(':id/reset-password')

@@ -35,39 +35,34 @@ export class UsersService {
   }
 
   async create(data: CreateAdminDto) {
-    await this.prisma.$transaction(async (tx) => {
+    return this.prisma.$transaction(async (tx) => {
       const userExists = await tx.user.findUnique({
-        where: {
-          email: data.email,
-        },
+        where: { email: data.email },
       });
-
       if (userExists) {
         throw new ConflictException('User already exists');
       }
 
       const hashedPassword = await argon2.hash(data.password);
 
-      const user = await tx.user.create({
+      await tx.user.create({
         data: {
           email: data.email,
           name: data.name,
           role: data.role,
-
           authProviders: {
             create: {
               provider: AuthProviderType.LOCAL,
               passwordHash: hashedPassword,
             },
           },
+          ...(data.role === Role.STUDENT && { studentProfile: { create: {} } }),
+          ...(data.role === Role.TEACHER && { teacherProfile: { create: {} } }),
         },
       });
 
-      return user;
+      return { message: `User ${data.role} created successfully` };
     });
-    return {
-      message: `User ${data.role} created successfully`,
-    };
   }
 
   async update(id: string, data: UpdateUsersDto) {
