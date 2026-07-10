@@ -12,10 +12,8 @@ import { AuthGuard } from './auth/guard/auth.guard';
 import { RolesGuard } from './auth/guard/roles.guard';
 import { CourseCategoriesModule } from './course-categories/course-categories.module';
 import { InstallmentsModule } from './installments/installments.module';
-import { EnrollmentsService } from './enrollments/enrollments.service';
 import { EnrollmentsController } from './enrollments/enrollments.controller';
 import { EnrollmentsModule } from './enrollments/enrollments.module';
-import { ClassSessionsService } from './class-sessions/class-sessions.service';
 import { ClassSessionsModule } from './class-sessions/class-sessions.module';
 import { StudentModule } from './student/student.module';
 
@@ -46,8 +44,6 @@ import { StudentModule } from './student/student.module';
       provide: APP_GUARD,
       useClass: RolesGuard,
     },
-    EnrollmentsService,
-    ClassSessionsService,
   ],
 })
 export class AppModule {}
