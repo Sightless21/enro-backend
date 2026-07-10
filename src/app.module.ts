@@ -12,6 +12,9 @@ import { AuthGuard } from './auth/guard/auth.guard';
 import { RolesGuard } from './auth/guard/roles.guard';
 import { CourseCategoriesModule } from './course-categories/course-categories.module';
 import { InstallmentsModule } from './installments/installments.module';
+import { EnrollmentsService } from './enrollments/enrollments.service';
+import { EnrollmentsController } from './enrollments/enrollments.controller';
+import { EnrollmentsModule } from './enrollments/enrollments.module';
 
 @Module({
   imports: [
@@ -25,8 +28,9 @@ import { InstallmentsModule } from './installments/installments.module';
     AuthModule,
     CourseCategoriesModule,
     InstallmentsModule,
+    EnrollmentsModule,
   ],
-  controllers: [AppController],
+  controllers: [AppController, EnrollmentsController],
   providers: [
     AppService,
     {
@@ -37,6 +41,7 @@ import { InstallmentsModule } from './installments/installments.module';
       provide: APP_GUARD,
       useClass: RolesGuard,
     },
+    EnrollmentsService,
   ],
 })
 export class AppModule {}

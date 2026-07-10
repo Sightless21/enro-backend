@@ -335,7 +335,7 @@ model Enrollment {
 
 enum EnrollmentStatus {
   ACTIVE
-  EXPIRED
+  // EXPIRED
   CANCELLED
 }
 
