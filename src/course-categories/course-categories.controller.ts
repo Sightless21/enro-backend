@@ -10,7 +10,9 @@ import {
 import { CourseCategoriesService } from './course-categories.service';
 import { CreateCourseCategoryDto } from './dto/create-course-category.dto';
 import { UpdateCourseCategoryDto } from './dto/update-course-category.dto';
+import { Roles } from '@/auth/decorator/roles.decorator';
 
+@Roles('ADMIN')
 @Controller('course-categories')
 export class CourseCategoriesController {
   constructor(
